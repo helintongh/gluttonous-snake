@@ -1,5 +1,5 @@
 local Body = class("Body")
-
+--[[
 local cGridSize = 33
 local scaleRate = 1/display.contentScaleFactor
 
@@ -13,7 +13,8 @@ function Grid2Pos(x,y)--把逻辑坐标换成像素中的坐标
 	return finalX,finalY
 
 end
-
+--]]
+--这段代码在AppleFactory.lua中用到，所以一道MainScene中
 
 function Body:ctor(snake,x,y,node,isHead)
 	self.snake = snake
