@@ -53,7 +53,7 @@ function MainScene:onEnter()--MainScene幕布运行的函数
 					self:Reset()
 				end)--死亡特效：闪烁，闪烁完后重置
 
-				self:Reset()--当蛇碰到自己时，场景重置
+				--self:Reset()--当蛇碰到自己时，场景重置
 			end
 		
 		end
