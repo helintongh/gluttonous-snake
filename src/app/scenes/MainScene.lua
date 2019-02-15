@@ -14,6 +14,7 @@ end
 
 local Snake = require"app.Snake"
 local AppleFactory = require"app.AppleFactory"
+local Fence = require"app.Fence"
 --local Body = require"app.Body"
 
 local MainScene = class("MainScene", function()
@@ -27,7 +28,10 @@ function MainScene:onEnter()--MainScene幕布运行的函数
 	--self.snake = Body.new(nil,0,0,self,false) --在点(0,0)显示身体
 --	self.snake = Snake.new(self)
 --	self.appleFactory = AppleFactory.new(cBound,self)
+	self:CreateScoreBoard()
 
+	self.fence = Fence.new(cBound,self)
+	
 	self:Reset()
 
 	self:ProcessInput()--控制函数
@@ -45,9 +49,12 @@ function MainScene:onEnter()--MainScene幕布运行的函数
 				self.appleFactory:Generate()--若碰到，苹果重生
 
 				self.snake:Grow()--蛇长大
+				self.score = self.score + 1--分数增加
+				self:SetScore(self.score)
+
 			end
 
-			if self.snake:CheckSelfCollide() then
+			if self.snake:CheckSelfCollide() or self.fence:CheckCollide(headX,headY) then
 				self.stage = "dead"
 				self.snake:Blink(function ()
 					self:Reset()
@@ -64,6 +71,28 @@ function MainScene:onEnter()--MainScene幕布运行的函数
 
 end
 
+function MainScene:CreateScoreBoard()--游戏分数计分板
+	
+	display.newSprite("applesign.png")--用精灵加载图片作为计分板背景
+	:pos(display.right-200,display.cy+150)--设置图片位置，
+	:addTo(self)
+
+
+	local ttfConfig = {}--配置字体
+	ttfConfig.fontFilePath = "arial.ttf"
+	ttfConfig.fontSize = 30
+
+	local score = cc.Label:createWithTTF(ttfConfig,"0")--计分板数字，默认为0
+	self:addChild(score)
+
+	score:setPosition(display.right-200,display.cy+80)
+	self.scoreLabel = score
+end
+
+function MainScene:SetScore(s)--分数设置
+	self.scoreLabel:setString(string.format("%d",s))
+end
+
 function MainScene:Reset()--场景重置，蛇死后操作
 
 	if self.snake ~= nil then
@@ -77,9 +106,10 @@ function MainScene:Reset()--场景重置，蛇死后操作
 	self.snake = Snake.new(self)
 	self.appleFactory = AppleFactory.new(cBound,self)
 	self.stage = "running"--RESET以后默认为运行状态
+	self.score = 0
+	self:SetScore(self.score)
 
 end
-
 
 local function vector2Dir(x,y)--判断蛇方向
 	if math.abs(x) > math.abs(y) then
